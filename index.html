@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyberpunk EDD Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        .neon-border {
+            box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 15px #ff00ff;
+        }
+        .cyber-gradient {
+            background: linear-gradient(45deg, #1a0033, #4d0099);
+        }
+        .result-glow {
+            text-shadow: 0 0 5px #ff00ff;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-black font-['Share_Tech_Mono'] text-purple-300 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-lg">
+        <div class="cyber-gradient rounded-lg neon-border p-6">
+            <h1 class="text-3xl font-['Orbitron'] font-bold text-center mb-6 text-pink-500 result-glow">
+                EDD.CALC_v1.0
+            </h1>
+            
+            <div class="space-y-6">
+                <div class="relative">
+                    <label for="lmp" class="block text-pink-400 mb-2">ENTER_LMP_DATE:</label>
+                    <input 
+                        type="date" 
+                        id="lmp"
+                        class="w-full bg-black/50 border border-pink-500 rounded-md p-3 text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                </div>
+
+                <button 
+                    onclick="calculateEDD()"
+                    class="w-full bg-pink-900/50 hover:bg-pink-800/50 text-pink-300 py-3 rounded-md neon-border transition-all duration-300"
+                >
+                    CALCULATE_EDD
+                </button>
+
+                <div class="bg-black/50 p-4 rounded-lg neon-border mt-6">
+                    <h2 class="text-xl font-['Orbitron'] text-pink-400 mb-3">RESULTS:</h2>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>EDD:</span>
+                            <span id="eddResult" class="text-pink-500 pulse">--/--/----</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span>WEEKS_PREGNANT:</span>
+                            <span id="weeksPregnant" class="text-pink-500">-- weeks</span>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <span>TRIMESTER:</span>
+                            <span id="trimester" class="text-pink-500">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-xs text-pink-400/70 text-center">
+                * CALCULATION_BASIS: LMP + 9_MONTHS + 7_DAYS
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateEDD() {
+            const lmpDate = new Date(document.getElementById('lmp').value);
+            
+            if (isNaN(lmpDate.getTime())) {
+                alert('ERROR: INVALID_DATE_INPUT');
+                return;
+            }
+
+            // Calculate EDD
+            const edd = new Date(lmpDate);
+            edd.setMonth(edd.getMonth() + 9);
+            edd.setDate(edd.getDate() + 7);
+
+            // Calculate weeks pregnant
+            const today = new Date();
+            const timeDiff = today - lmpDate;
+            const weeksPregnant = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 7));
+
+            // Determine trimester
+            let trimester;
+            if (weeksPregnant < 13) {
+                trimester = "FIRST";
+            } else if (weeksPregnant < 27) {
+                trimester = "SECOND";
+            } else {
+                trimester = "THIRD";
+            }
+
+            // Display results
+            document.getElementById('eddResult').textContent = edd.toLocaleDateString();
+            document.getElementById('weeksPregnant').textContent = 
+                weeksPregnant > 0 ? `${weeksPregnant} weeks` : '0 weeks';
+            document.getElementById('trimester').textContent = trimester;
+
+            // Add pulse animation to results
+            document.getElementById('eddResult').classList.add('pulse');
+            setTimeout(() => {
+                document.getElementById('eddResult').classList.remove('pulse');
+            }, 2000);
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
